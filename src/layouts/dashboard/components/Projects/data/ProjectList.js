@@ -11,7 +11,7 @@ function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
-
+  const role = localStorage.getItem("role");
   useEffect(() => {
     document.title = "Liste des Projets";
   }, []);
@@ -19,7 +19,12 @@ function ProjectList() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await getProjects();
+        let res = await getProjects();
+        if (role === "user") {
+          res = res.filter((project) =>
+            project.members.some((member) => member._id === localStorage.getItem("userId"))
+          );
+        }
         // Trier les projets par échéance la plus proche
         const sortedProjects = res.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
         setProjects(sortedProjects || []);
@@ -32,9 +37,8 @@ function ProjectList() {
       const role = localStorage.getItem("role");
       setIsAdmin(role === "admin");
     };
-
-    fetchProjects();
     checkAdmin();
+    fetchProjects();
   }, []);
 
   const handleDelete = async (id) => {

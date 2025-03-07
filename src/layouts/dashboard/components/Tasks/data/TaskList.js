@@ -23,6 +23,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
 // Material Dashboard 2 React example components
 import CircularProgress from "@mui/material/CircularProgress";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 function TaskList() {
   const navigate = useNavigate();
@@ -168,9 +170,32 @@ function TaskList() {
       </MDTypography>
     ),
     assignedTo: (
-      <MDTypography variant="caption" color="text" fontWeight="medium">
-        {task.assignedUser || "Non assigné"}
-      </MDTypography>
+      <MDBox>
+        {task.assignedUser ? (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            {task.assignedUser}
+          </MDTypography>
+        ) : role === "admin" ? (
+          <Select
+            defaultValue=""
+            onChange={(e) => handleAssignTask(task._id, e.target.value, id)}
+            sx={{ width: "100%", fontSize: "0.875rem" }}
+          >
+            <MenuItem value="">Sélectionner un utilisateur</MenuItem>
+            {users
+              .filter((user) => user._id !== task.assignedTo)
+              .map((user) => (
+                <MenuItem key={user._id} value={user._id}>
+                  {user.name}
+                </MenuItem>
+              ))}
+          </Select>
+        ) : (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            Non assigné
+          </MDTypography>
+        )}
+      </MDBox>
     ),
     completion: (
       <MDBox display="flex" alignItems="center">

@@ -43,16 +43,30 @@ function Dashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Récupérer le rôle et l'ID de l'utilisateur
+  const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+
   // Charger les projets et sélectionner un projet aléatoire au montage du composant
   useEffect(() => {
     const fetchData = async () => {
       try {
         const projectsData = await getProjects();
-        setProjects(projectsData);
 
-        // Sélectionner un projet aléatoire
-        if (projectsData.length > 0) {
-          const randomProject = projectsData[Math.floor(Math.random() * projectsData.length)];
+        // Filtrer les projets pour les utilisateurs ayant le rôle "user"
+        const filteredProjects =
+          role === "user"
+            ? projectsData.filter((project) =>
+                project.members.some((member) => member._id === userId)
+              )
+            : projectsData;
+
+        setProjects(filteredProjects);
+
+        // Sélectionner un projet aléatoire parmi les projets filtrés
+        if (filteredProjects.length > 0) {
+          const randomProject =
+            filteredProjects[Math.floor(Math.random() * filteredProjects.length)];
           setSelectedProject(randomProject._id);
         }
 
@@ -66,7 +80,7 @@ function Dashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [role, userId]);
 
   // Charger les tâches du projet sélectionné
   useEffect(() => {

@@ -121,16 +121,6 @@ function UpdateTask() {
               </MDBox>
               <MDBox mb={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Statut</InputLabel>
-                  <Select name="status" value={task.status} onChange={handleChange}>
-                    <MenuItem value="En attente">En attente</MenuItem>
-                    <MenuItem value="En cours">En cours</MenuItem>
-                    <MenuItem value="Terminé">Terminé</MenuItem>
-                  </Select>
-                </FormControl>
-              </MDBox>
-              <MDBox mb={2}>
-                <FormControl fullWidth>
                   <InputLabel>Priorité</InputLabel>
                   <Select name="priority" value={task.priority} onChange={handleChange}>
                     <MenuItem value="Basse">Basse</MenuItem>
