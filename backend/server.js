@@ -1,18 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/project");
-const taskRoutes = require("./routes/task");
-const User = require("./models/User");
-const MONGODB_URL = require("./env").MONGODB_URL;
-
 const app = express();
-const PORT = process.env.PORT || 5000;
-
+const PORT = 5000;
+const User = require("./models/User");
+const taskRoutes = require("./routes/task");
+require("dotenv").config();
+const MONGODB_URL = process.env.MONGODB_URL;
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
 // Connexion à MongoDB
 mongoose
@@ -21,45 +21,36 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(async () => {
-    console.log("Connecté à MongoDB");
-
     // Vérifier si un utilisateur admin existe déjà
     const existingAdmin = await User.findOne({ email: "admin@promanage.com" });
-    if (!existingAdmin) {
-      // Création de l'utilisateur admin
-      const adminUser = new User({
-        name: "promanage",
-        email: "promanage@gmail.com",
-        password: "wahhab",
-        isAdmin: true,
-      });
-
-      // Sauvegarder l'utilisateur dans la base de données
-      await adminUser.save();
-      console.log("Admin créé avec succès");
-    } else {
+    if (existingAdmin) {
       console.log("Admin déjà existant");
+      return;
     }
+
+    // Création de l'utilisateur admin
+    const adminUser = new User({
+      name: "promanage",
+      email: "promanage@gmail.com",
+      password: "wahhab",
+      isAdmin: true,
+    });
+
+    // Sauvegarder l'utilisateur dans la base de données
+    await adminUser.save();
+    console.log("Admin créé avec succès");
+    console.log("Utilisateur admin :", adminUser);
   })
   .catch((err) => console.error("Erreur de connexion MongoDB :", err));
 
-// Routes
+// Routes d'authentification
 app.use("/api/auth", authRoutes);
+
 app.use("/api/projects", projectRoutes);
+
 app.use("/api/tasks", taskRoutes);
 
-// Gestion des erreurs globales
-app.use((err, req, res, next) => {
-  console.error("Erreur globale :", err);
-  res.status(500).json({ message: "Erreur interne du serveur" });
+// Lancement du serveur
+app.listen(PORT, () => {
+  console.log(`Serveur backend lancé sur le port ${PORT}`);
 });
-
-// Export pour Vercel
-module.exports = app;
-
-// Lancement du serveur (uniquement en local)
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`Serveur backend lancé sur le port ${PORT}`);
-  });
-}
