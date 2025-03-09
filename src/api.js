@@ -1,6 +1,6 @@
-const API_URL = "http://localhost:5000/api/auth";
-const API_URL_PROJECT = "http://localhost:5000/api/projects";
-const API_URL_TASK = "http://localhost:5000/api/tasks";
+const API_URL = "https://promanage-alpha-eight.vercel.app/api/auth";
+const API_URL_PROJECT = "https://promanage-alpha-eight.vercel.app/api/projects";
+const API_URL_TASK = "https://promanage-alpha-eight.vercel.app/api/tasks";
 
 //Auth
 export const getUserById = async (id) => {
