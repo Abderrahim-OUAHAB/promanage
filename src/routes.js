@@ -47,7 +47,8 @@ import TaskList from "layouts/dashboard/components/Tasks/data/TaskList";
 import Logout from "layouts/Deconnexion/Logout";
 // @mui icons
 import Icon from "@mui/material/Icon";
-
+const role = localStorage.getItem("role");
+const isAdmin = role === "admin";
 const routes = [
   {
     type: "collapse",
@@ -57,7 +58,7 @@ const routes = [
     route: "/dashboard",
     component: <Dashboard />,
   },
-  {
+  isAdmin && {
     type: "collapse",
     name: "Créer un Projet",
     key: "create-project",
@@ -69,7 +70,7 @@ const routes = [
     route: "/update-project/:id", // Utilisez un paramètre dynamique pour l'ID du projet
     component: <UpdateProject />,
   },
-  {
+  isAdmin && {
     type: "collapse",
     name: "Créer une Tache",
     key: "create-task",

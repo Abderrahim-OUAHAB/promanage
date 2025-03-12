@@ -22,7 +22,7 @@ mongoose
   })
   .then(async () => {
     // Vérifier si un utilisateur admin existe déjà
-    const existingAdmin = await User.findOne({ email: "admin@promanage.com" });
+    const existingAdmin = await User.findOne({ email: "promanage@gmail.com" });
     if (existingAdmin) {
       console.log("Admin déjà existant");
       return;

@@ -12,6 +12,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 
+// Toast notifications
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -21,7 +25,6 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
 // Dashboard components
@@ -98,6 +101,57 @@ function Dashboard() {
     fetchTasks();
   }, [selectedProject]);
 
+  // Notifications
+  useEffect(() => {
+    if (projectTasks.length > 0) {
+      const now = new Date();
+
+      // Délai pour éviter de bloquer l'affichage initial
+      setTimeout(() => {
+        const urgentTask = projectTasks
+          .filter((task) => new Date(task.deadline) > now && task.status !== "Terminée")
+          .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))[0];
+
+        if (urgentTask) {
+          toast.warning(
+            `Tâche urgente : ${urgentTask.name} à terminer avant ${new Date(
+              urgentTask.deadline
+            ).toLocaleDateString()}`,
+            { autoClose: 5000 } // Fermer après 5 secondes
+          );
+        }
+
+        const overdueTask = projectTasks.find(
+          (task) => new Date(task.deadline) < now && task.status !== "Terminée"
+        );
+        if (overdueTask) {
+          toast.error(
+            `Tâche en retard : ${overdueTask.name} (deadline : ${new Date(
+              overdueTask.deadline
+            ).toLocaleDateString()})`,
+            { autoClose: 5000 } // Fermer après 5 secondes
+          );
+        }
+
+        const highPriorityTask = projectTasks.find((task) => task.priority === "Haute");
+        if (highPriorityTask) {
+          toast.info(`Tâche prioritaire : ${highPriorityTask.name}`, { autoClose: 5000 }); // Fermer après 5 secondes
+        }
+      }, 2000); // Délai de 2 secondes avant d'afficher les notifications
+    }
+  }, [projectTasks]);
+
+  // Message de bienvenue basé sur le rôle
+  useEffect(() => {
+    setTimeout(() => {
+      if (role === "admin") {
+        toast.success("Bienvenue Admin ! Vérifiez les projets récents.", { autoClose: 3000 });
+      } else if (role === "user") {
+        toast.info("Bienvenue ! Consultez vos tâches en attente.", { autoClose: 3000 });
+      }
+    }, 1000); // Délai de 1 seconde avant d'afficher le message de bienvenue
+  }, [role]);
+
   // Calculer les statistiques des tâches
   const totalTasks = projectTasks.length;
   const completedTasks = projectTasks.filter((task) => task.status === "Terminée").length;
@@ -139,6 +193,19 @@ function Dashboard() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      {/* Configurer ToastContainer pour limiter les notifications et les positionner en haut à droite */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        limit={3} // Limite à 3 notifications simultanées
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <MDBox py={3}>
         <Grid container spacing={3}>
           {/* Carte pour créer un projet */}

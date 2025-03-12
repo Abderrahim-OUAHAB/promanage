@@ -90,6 +90,9 @@ function CreateProject() {
                   fullWidth
                   value={formData.deadline}
                   onChange={handleChange}
+                  InputLabelProps={{
+                    shrink: true, // Pour que le label ne chevauche pas la valeur
+                  }}
                 />
               </MDBox>
               <MDBox mt={4} mb={1}>

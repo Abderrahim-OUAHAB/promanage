@@ -297,7 +297,10 @@ function TaskList() {
                     {project.description}
                   </MDTypography>
                   <MDTypography variant="body2" color="text">
-                    Échéance : {formatDate(project.deadline)}
+                    <span style={{ fontWeight: "bold", color: "red" }}>
+                      {" "}
+                      Échéance : {formatDate(project.deadline)}
+                    </span>
                   </MDTypography>
                 </MDBox>
                 <MDBox position="relative" display="inline-flex">

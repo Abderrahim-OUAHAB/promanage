@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTask, getProjects } from "../../../../../api";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
 import Card from "@mui/material/Card";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import MDBox from "components/MDBox";
+import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React layout components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -112,9 +112,13 @@ function CreateTask() {
               </MDBox>
               <MDBox mb={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Projet</InputLabel>
+                  <InputLabel id="project-label" shrink>
+                    Projet
+                  </InputLabel>
                   <Select
+                    labelId="project-label"
                     name="projectId"
+                    label="Projet"
                     value={taskData.projectId}
                     onChange={handleChange}
                     required
@@ -130,8 +134,16 @@ function CreateTask() {
               </MDBox>
               <MDBox mb={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Statut</InputLabel>
-                  <Select name="status" value={taskData.status} onChange={handleChange}>
+                  <InputLabel id="status-label" shrink>
+                    Statut
+                  </InputLabel>
+                  <Select
+                    labelId="status-label"
+                    name="status"
+                    label="Statut"
+                    value={taskData.status}
+                    onChange={handleChange}
+                  >
                     <MenuItem value="En attente">En attente</MenuItem>
                     <MenuItem value="En cours">En cours</MenuItem>
                     <MenuItem value="Terminé">Terminé</MenuItem>
@@ -140,8 +152,16 @@ function CreateTask() {
               </MDBox>
               <MDBox mb={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Priorité</InputLabel>
-                  <Select name="priority" value={taskData.priority} onChange={handleChange}>
+                  <InputLabel id="priority-label" shrink>
+                    Priorité
+                  </InputLabel>
+                  <Select
+                    labelId="priority-label"
+                    name="priority"
+                    label="Priorité"
+                    value={taskData.priority}
+                    onChange={handleChange}
+                  >
                     <MenuItem value="Basse">Basse</MenuItem>
                     <MenuItem value="Moyenne">Moyenne</MenuItem>
                     <MenuItem value="Haute">Haute</MenuItem>
@@ -149,14 +169,19 @@ function CreateTask() {
                 </FormControl>
               </MDBox>
               <MDBox mb={2}>
-                <MDInput
-                  type="date"
-                  name="deadline"
-                  label="Date limite"
-                  fullWidth
-                  value={taskData.deadline}
-                  onChange={handleChange}
-                />
+                <FormControl fullWidth>
+                  <MDInput
+                    type="date"
+                    name="deadline"
+                    label="Date limite"
+                    fullWidth
+                    value={taskData.deadline}
+                    onChange={handleChange}
+                    InputLabelProps={{
+                      shrink: true, // Pour que le label ne chevauche pas la valeur
+                    }}
+                  />
+                </FormControl>
               </MDBox>
               <MDBox mt={4} mb={1}>
                 <MDButton variant="gradient" color="info" fullWidth type="submit">
