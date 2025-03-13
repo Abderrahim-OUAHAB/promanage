@@ -250,6 +250,27 @@ function Dashboard() {
                   />
                 </MDBox>
               </Grid>
+              <Grid item xs={12} md={6} lg={3}>
+                <MDBox mb={1.5}>
+                  <ComplexStatisticsCard
+                    color="success"
+                    icon="explore"
+                    title="Explorer Projets"
+                    count="Explorer"
+                    percentage={{
+                      color: "success",
+                      amount: "",
+                      label: "Cliquez pour descendre",
+                    }}
+                    onClick={() => {
+                      const projectSection = document.getElementById("projects");
+                      if (projectSection) {
+                        projectSection.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                  />
+                </MDBox>
+              </Grid>
 
               {/* Sélection du projet */}
               <Grid item xs={12} md={6} lg={3}>
@@ -346,7 +367,7 @@ function Dashboard() {
             </MDBox>
 
             {/* Projets et aperçu des tâches */}
-            <MDBox>
+            <MDBox id="projects">
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6} lg={8}>
                   <Projects />

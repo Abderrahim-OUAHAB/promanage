@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /**
 =========================================================
 * Material Dashboard 2 React - v2.2.0
@@ -18,8 +19,7 @@ Coded by www.creative-tim.com
   you can customize the states for the different components here.
 */
 
-import { createContext, useContext, useReducer, useMemo } from "react";
-
+import { createContext, useContext, useReducer, useMemo, useState } from "react";
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
@@ -103,6 +103,17 @@ function useMaterialUIController() {
   return context;
 }
 
+export const SearchContext = createContext();
+
+export const SearchProvider = ({ children }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  return (
+    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
+      {children}
+    </SearchContext.Provider>
+  );
+};
 // Typechecking props for the MaterialUIControllerProvider
 MaterialUIControllerProvider.propTypes = {
   children: PropTypes.node.isRequired,

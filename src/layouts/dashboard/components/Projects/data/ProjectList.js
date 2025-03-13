@@ -6,14 +6,17 @@ import { getProjects, deleteProject } from "../../../../../api";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
+import MDInput from "components/MDInput"; // Importez MDInput pour le champ de recherche
 
 // Spinner component
 import Spinner from "examples/Spinner";
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]); // Projets filtrés
+  const [searchQuery, setSearchQuery] = useState(""); // État pour la recherche
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true); // État pour gérer le chargement
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
 
@@ -33,10 +36,11 @@ function ProjectList() {
         // Trier les projets par échéance la plus proche
         const sortedProjects = res.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
         setProjects(sortedProjects || []);
+        setFilteredProjects(sortedProjects || []); // Initialiser les projets filtrés
       } catch (error) {
-        //console.error("Erreur lors de la récupération des projets :", error);
+        console.error("Erreur lors de la récupération des projets :", error);
       } finally {
-        setLoading(false); // Arrêter le chargement une fois les données récupérées
+        setLoading(false);
       }
     };
 
@@ -47,6 +51,14 @@ function ProjectList() {
     checkAdmin();
     fetchProjects();
   }, [role]);
+
+  // Filtrer les projets en fonction de la recherche
+  useEffect(() => {
+    const filtered = projects.filter((project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProjects(filtered);
+  }, [searchQuery, projects]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer ce projet ?")) {
@@ -75,7 +87,7 @@ function ProjectList() {
   ];
 
   // Formatage des données pour le tableau
-  const rows = projects.map((project) => ({
+  const rows = filteredProjects.map((project) => ({
     name: <MDTypography variant="caption">{project.name}</MDTypography>,
     deadline: (
       <MDTypography variant="caption">
@@ -128,7 +140,17 @@ function ProjectList() {
         <Spinner />
       ) : (
         <>
-          <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}></MDBox>
+          {/* Champ de recherche */}
+          <MDBox mb={3}>
+            <MDInput
+              fullWidth
+              placeholder="Rechercher un projet..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </MDBox>
+
+          {/* Tableau des projets */}
           <DataTable
             table={{ columns, rows }}
             isSorted={false}

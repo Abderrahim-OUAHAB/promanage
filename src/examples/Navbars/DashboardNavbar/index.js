@@ -13,8 +13,8 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useContext } from "react";
+import { SearchContext } from "context";
 // react-router components
 import { useLocation, Link } from "react-router-dom";
 
@@ -59,7 +59,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
-
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
   useEffect(() => {
     // Setting the navbar type
     if (fixedNavbar) {
@@ -136,7 +136,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox pr={1}>
-              <MDInput label="Search here" />
+              <MDInput
+                label="Search here"
+                value={searchQuery} // Lier la valeur de recherche
+                onChange={(e) => setSearchQuery(e.target.value)} // Mettre à jour la recherche
+              />
             </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
               <IconButton

@@ -16,6 +16,7 @@ import MDTypography from "components/MDTypography";
 import MDProgress from "components/MDProgress";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput"; // Importez MDInput pour le champ de recherche
 
 // Material Dashboard 2 React layout components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -33,11 +34,13 @@ function TaskList() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]); // Tâches filtrées
+  const [searchQuery, setSearchQuery] = useState(""); // État pour la recherche
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // État pour gérer le chargement
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [project, setProject] = useState(null);
-  const [selectedTask, setSelectedTask] = useState(null); // État pour stocker la tâche sélectionnée
+  const [selectedTask, setSelectedTask] = useState(null);
   const role = localStorage.getItem("role");
   const userId = localStorage.getItem("userId");
 
@@ -81,10 +84,11 @@ function TaskList() {
       });
 
       setTasks(tasksWithUsers);
+      setFilteredTasks(tasksWithUsers); // Initialiser les tâches filtrées
     } catch (err) {
       setError("Erreur lors de la récupération des tâches");
     } finally {
-      setLoading(false); // Arrêter le chargement une fois les données récupérées
+      setLoading(false);
     }
   };
 
@@ -96,6 +100,14 @@ function TaskList() {
       setError("Erreur lors de la récupération des utilisateurs");
     }
   };
+
+  // Filtrer les tâches en fonction de la recherche
+  useEffect(() => {
+    const filtered = tasks.filter((task) =>
+      task.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredTasks(filtered);
+  }, [searchQuery, tasks]);
 
   const handleAssignTask = async (taskId, userId, id) => {
     try {
@@ -152,13 +164,13 @@ function TaskList() {
     { Header: "Actions", accessor: "actions", align: "center" },
   ];
 
-  const rows = tasks.map((task) => ({
+  const rows = filteredTasks.map((task) => ({
     task: (
       <MDTypography
         variant="button"
         fontWeight="medium"
-        onClick={() => setSelectedTask(task)} // Afficher la description au clic
-        style={{ cursor: "pointer" }} // Changer le curseur pour indiquer que c'est cliquable
+        onClick={() => setSelectedTask(task)}
+        style={{ cursor: "pointer" }}
       >
         {task.name}
       </MDTypography>
@@ -310,7 +322,6 @@ function TaskList() {
                       </MDTypography>
                       <MDTypography variant="body2" color="text">
                         <span style={{ fontWeight: "bold", color: "red" }}>
-                          {" "}
                           Échéance : {formatDate(project.deadline)}
                         </span>
                       </MDTypography>
@@ -341,6 +352,18 @@ function TaskList() {
                   </MDBox>
                 </MDBox>
               )}
+
+              {/* Champ de recherche */}
+              <MDBox mb={3}>
+                <MDInput
+                  fullWidth
+                  placeholder="Rechercher une tâche..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </MDBox>
+
+              {/* Tableau des tâches */}
               <DataTable
                 table={{ columns, rows }}
                 isSorted={false}
@@ -348,6 +371,7 @@ function TaskList() {
                 showTotalEntries={false}
                 noEndBorder
               />
+
               {selectedTask && ( // Afficher la carte de description si une tâche est sélectionnée
                 <MDBox mt={4} p={3} boxShadow={3} borderRadius="lg">
                   <MDBox display="flex" justifyContent="space-between" alignItems="center">
@@ -358,7 +382,7 @@ function TaskList() {
                       variant="gradient"
                       color="error"
                       size="small"
-                      onClick={() => setSelectedTask(null)} // Fermer la carte
+                      onClick={() => setSelectedTask(null)}
                     >
                       Fermer
                     </MDButton>
