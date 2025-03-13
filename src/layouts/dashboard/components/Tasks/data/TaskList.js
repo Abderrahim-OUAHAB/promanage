@@ -37,6 +37,7 @@ function TaskList() {
   const [loading, setLoading] = useState(true); // État pour gérer le chargement
   const [error, setError] = useState("");
   const [project, setProject] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null); // État pour stocker la tâche sélectionnée
   const role = localStorage.getItem("role");
   const userId = localStorage.getItem("userId");
 
@@ -153,7 +154,12 @@ function TaskList() {
 
   const rows = tasks.map((task) => ({
     task: (
-      <MDTypography variant="button" fontWeight="medium">
+      <MDTypography
+        variant="button"
+        fontWeight="medium"
+        onClick={() => setSelectedTask(task)} // Afficher la description au clic
+        style={{ cursor: "pointer" }} // Changer le curseur pour indiquer que c'est cliquable
+      >
         {task.name}
       </MDTypography>
     ),
@@ -342,6 +348,26 @@ function TaskList() {
                 showTotalEntries={false}
                 noEndBorder
               />
+              {selectedTask && ( // Afficher la carte de description si une tâche est sélectionnée
+                <MDBox mt={4} p={3} boxShadow={3} borderRadius="lg">
+                  <MDBox display="flex" justifyContent="space-between" alignItems="center">
+                    <MDTypography variant="h6" color="info">
+                      Description de la tâche : {selectedTask.name}
+                    </MDTypography>
+                    <MDButton
+                      variant="gradient"
+                      color="error"
+                      size="small"
+                      onClick={() => setSelectedTask(null)} // Fermer la carte
+                    >
+                      Fermer
+                    </MDButton>
+                  </MDBox>
+                  <MDTypography variant="body1" color="text">
+                    {selectedTask.description || "Aucune description disponible."}
+                  </MDTypography>
+                </MDBox>
+              )}
             </>
           )}
         </MDBox>
