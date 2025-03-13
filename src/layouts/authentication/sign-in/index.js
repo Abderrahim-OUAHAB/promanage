@@ -10,6 +10,7 @@ import Card from "@mui/material/Card";
 import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
 import MuiLink from "@mui/material/Link";
+import CircularProgress from "@mui/material/CircularProgress"; // Importer CircularProgress pour le spinner
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -35,6 +36,7 @@ function Basic() {
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false); // État pour gérer le chargement
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -45,6 +47,8 @@ function Basic() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Activer l'état de chargement
+
     try {
       const response = await login(formData);
       if (response.token) {
@@ -53,13 +57,19 @@ function Basic() {
         localStorage.setItem("role", response.user.isAdmin ? "admin" : "user");
         localStorage.setItem("user", response.user.name);
         localStorage.setItem("userId", response.user._id);
-        navigate("/dashboard");
+
+        // Rediriger après un court délai pour permettre l'affichage du spinner
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000); // Délai de 1 seconde
       } else {
         alert("Erreur : " + response.error);
+        setLoading(false); // Désactiver l'état de chargement en cas d'erreur
       }
     } catch (error) {
       console.error("Erreur :", error);
       alert("Problème lors de la connexion");
+      setLoading(false); // Désactiver l'état de chargement en cas d'erreur
     }
   };
 
@@ -135,8 +145,14 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton type="submit" variant="gradient" color="info" fullWidth>
-                sign in
+              <MDButton
+                type="submit"
+                variant="gradient"
+                color="info"
+                fullWidth
+                disabled={loading} // Désactiver le bouton pendant le chargement
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : "Sign in"}
               </MDButton>
             </MDBox>
             <MDBox mt={3} mb={1} textAlign="center">

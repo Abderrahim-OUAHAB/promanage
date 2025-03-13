@@ -51,6 +51,7 @@ function Dashboard() {
 
   // Récupérer le rôle et l'ID de l'utilisateur
   const role = localStorage.getItem("role");
+  const isAdmin = role === "admin";
   const userId = localStorage.getItem("userId");
 
   // Charger les projets et sélectionner un projet aléatoire au montage du composant
@@ -216,40 +217,46 @@ function Dashboard() {
           <>
             <Grid container spacing={3}>
               {/* Carte pour créer un projet */}
-              <Grid item xs={12} md={6} lg={3}>
-                <MDBox mb={1.5}>
-                  <ComplexStatisticsCard
-                    color="info"
-                    icon="add_task"
-                    title="Créer un Projet"
-                    count="Nouveau"
-                    percentage={{
-                      color: "success",
-                      amount: "",
-                      label: "Cliquez pour commencer",
-                    }}
-                    onClick={() => navigate("/create-project")}
-                  />
-                </MDBox>
-              </Grid>
+              {isAdmin && (
+                <Grid item xs={12} md={6} lg={3}>
+                  <MDBox mb={1.5}>
+                    <ComplexStatisticsCard
+                      color="info"
+                      icon="add_task"
+                      title="Créer un Projet"
+                      count="Nouveau"
+                      percentage={{
+                        color: "success",
+                        amount: "",
+                        label: "Cliquez pour commencer",
+                      }}
+                      onClick={() => navigate("/create-project")}
+                    />
+                  </MDBox>
+                </Grid>
+              )}
 
               {/* Carte pour créer une tâche */}
-              <Grid item xs={12} md={6} lg={3}>
-                <MDBox mb={1.5}>
-                  <ComplexStatisticsCard
-                    color="warning"
-                    icon="task"
-                    title="Créer une Tâche"
-                    count="Nouvelle"
-                    percentage={{
-                      color: "success",
-                      amount: "",
-                      label: "Cliquez pour commencer",
-                    }}
-                    onClick={() => navigate("/create-task")}
-                  />
-                </MDBox>
-              </Grid>
+              {isAdmin && (
+                <Grid item xs={12} md={6} lg={3}>
+                  <MDBox mb={1.5}>
+                    <ComplexStatisticsCard
+                      color="warning"
+                      icon="task"
+                      title="Créer une Tâche"
+                      count="Nouvelle"
+                      percentage={{
+                        color: "success",
+                        amount: "",
+                        label: "Cliquez pour commencer",
+                      }}
+                      onClick={() => navigate("/create-task")}
+                    />
+                  </MDBox>
+                </Grid>
+              )}
+
+              {/* Carte pour explorer les projets */}
               <Grid item xs={12} md={6} lg={3}>
                 <MDBox mb={1.5}>
                   <ComplexStatisticsCard
