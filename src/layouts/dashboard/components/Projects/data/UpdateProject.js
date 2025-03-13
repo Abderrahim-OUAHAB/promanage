@@ -13,10 +13,14 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
+// Spinner component
+import Spinner from "examples/Spinner";
+
 function UpdateProject() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: "", description: "", deadline: "" });
+  const [loading, setLoading] = useState(true); // État pour gérer le chargement
 
   useEffect(() => {
     document.title = "Modifier le Projet";
@@ -34,6 +38,8 @@ function UpdateProject() {
         });
       } catch (err) {
         alert("Erreur lors du chargement du projet");
+      } finally {
+        setLoading(false); // Arrêter le chargement une fois les données récupérées
       }
     };
     fetchProject();
@@ -80,46 +86,50 @@ function UpdateProject() {
             </MDTypography>
           </MDBox>
           <MDBox pt={4} pb={3} px={3}>
-            <form onSubmit={handleSubmit}>
-              <MDBox mb={2}>
-                <MDInput
-                  type="text"
-                  name="name"
-                  label="Nom du projet"
-                  fullWidth
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <MDInput
-                  type="text"
-                  name="description"
-                  label="Description"
-                  multiline
-                  rows={4}
-                  fullWidth
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <MDInput
-                  type="date"
-                  name="deadline"
-                  label="Date limite"
-                  fullWidth
-                  value={formData.deadline}
-                  onChange={handleChange}
-                />
-              </MDBox>
-              <MDBox mt={4} mb={1}>
-                <MDButton variant="gradient" color="info" fullWidth type="submit">
-                  Mettre à jour
-                </MDButton>
-              </MDBox>
-            </form>
+            {loading ? ( // Afficher le spinner si les données sont en cours de chargement
+              <Spinner />
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="text"
+                    name="name"
+                    label="Nom du projet"
+                    fullWidth
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="text"
+                    name="description"
+                    label="Description"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="date"
+                    name="deadline"
+                    label="Date limite"
+                    fullWidth
+                    value={formData.deadline}
+                    onChange={handleChange}
+                  />
+                </MDBox>
+                <MDBox mt={4} mb={1}>
+                  <MDButton variant="gradient" color="info" fullWidth type="submit">
+                    Mettre à jour
+                  </MDButton>
+                </MDBox>
+              </form>
+            )}
           </MDBox>
         </Card>
       </MDBox>

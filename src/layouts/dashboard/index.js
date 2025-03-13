@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // @mui material components
-import Grid from "@mui/material/Grid";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 
 // Toast notifications
 import { ToastContainer, toast } from "react-toastify";
@@ -21,11 +21,11 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
+import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
+import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
 // Dashboard components
 import Projects from "layouts/dashboard/components/Projects";
@@ -36,6 +36,9 @@ import { getProjects, getTasks, getUsers } from "api";
 // Navigation
 import { useNavigate } from "react-router-dom";
 
+// Spinner component
+import Spinner from "examples/Spinner";
+
 function Dashboard() {
   const navigate = useNavigate();
 
@@ -44,7 +47,7 @@ function Dashboard() {
   const [selectedProject, setSelectedProject] = useState("");
   const [projectTasks, setProjectTasks] = useState([]);
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // État pour gérer le chargement
 
   // Récupérer le rôle et l'ID de l'utilisateur
   const role = localStorage.getItem("role");
@@ -76,9 +79,9 @@ function Dashboard() {
         const usersData = await getUsers();
         setUsers(usersData);
       } catch (err) {
-        console.error("Erreur lors du chargement des données :", err);
+        //console.error("Erreur lors du chargement des données :", err);
       } finally {
-        setLoading(false);
+        setLoading(false); // Arrêter le chargement une fois les données récupérées
       }
     };
 
@@ -93,7 +96,7 @@ function Dashboard() {
           const tasksData = await getTasks(selectedProject);
           setProjectTasks(tasksData);
         } catch (err) {
-          console.error("Erreur lors de la récupération des tâches :", err);
+          // console.error("Erreur lors de la récupération des tâches :", err);
         }
       }
     };
@@ -207,226 +210,234 @@ function Dashboard() {
         pauseOnHover
       />
       <MDBox py={3}>
-        <Grid container spacing={3}>
-          {/* Carte pour créer un projet */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="info"
-                icon="add_task"
-                title="Créer un Projet"
-                count="Nouveau"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Cliquez pour commencer",
-                }}
-                onClick={() => navigate("/create-project")}
-              />
+        {loading ? ( // Afficher le spinner si les données sont en cours de chargement
+          <Spinner />
+        ) : (
+          <>
+            <Grid container spacing={3}>
+              {/* Carte pour créer un projet */}
+              <Grid item xs={12} md={6} lg={3}>
+                <MDBox mb={1.5}>
+                  <ComplexStatisticsCard
+                    color="info"
+                    icon="add_task"
+                    title="Créer un Projet"
+                    count="Nouveau"
+                    percentage={{
+                      color: "success",
+                      amount: "",
+                      label: "Cliquez pour commencer",
+                    }}
+                    onClick={() => navigate("/create-project")}
+                  />
+                </MDBox>
+              </Grid>
+
+              {/* Carte pour créer une tâche */}
+              <Grid item xs={12} md={6} lg={3}>
+                <MDBox mb={1.5}>
+                  <ComplexStatisticsCard
+                    color="warning"
+                    icon="task"
+                    title="Créer une Tâche"
+                    count="Nouvelle"
+                    percentage={{
+                      color: "success",
+                      amount: "",
+                      label: "Cliquez pour commencer",
+                    }}
+                    onClick={() => navigate("/create-task")}
+                  />
+                </MDBox>
+              </Grid>
+
+              {/* Sélection du projet */}
+              <Grid item xs={12} md={6} lg={3}>
+                <MDBox mb={1.5}>
+                  <MDTypography variant="h6" gutterBottom>
+                    Choisir un projet
+                  </MDTypography>
+                  <Select
+                    value={selectedProject}
+                    onChange={(e) => setSelectedProject(e.target.value)}
+                    fullWidth
+                  >
+                    {projects.map((project) => (
+                      <MenuItem key={project._id} value={project._id}>
+                        {project.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </MDBox>
+              </Grid>
+            </Grid>
+
+            {/* Statistiques clés */}
+            <MDBox mt={4.5}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  <ComplexStatisticsCard
+                    color="success"
+                    icon="task"
+                    title="Tâches totales"
+                    count={totalTasks.toString()}
+                    percentage={{
+                      color: "success",
+                      amount: "",
+                      label: "Tâches dans ce projet",
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <ComplexStatisticsCard
+                    color="info"
+                    icon="check_circle"
+                    title="Tâches terminées"
+                    count={completedTasks.toString()}
+                    percentage={{
+                      color: "success",
+                      amount: "",
+                      label: "Tâches terminées",
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <ComplexStatisticsCard
+                    color="warning"
+                    icon="pending_actions"
+                    title="Tâches en cours"
+                    count={inProgressTasks.toString()}
+                    percentage={{
+                      color: "warning",
+                      amount: "",
+                      label: "Tâches en cours",
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </MDBox>
-          </Grid>
 
-          {/* Carte pour créer une tâche */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="warning"
-                icon="task"
-                title="Créer une Tâche"
-                count="Nouvelle"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Cliquez pour commencer",
-                }}
-                onClick={() => navigate("/create-task")}
-              />
+            {/* Graphiques */}
+            <MDBox mt={4.5}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <MDBox mb={3}>
+                    <ReportsBarChart
+                      color="info"
+                      title="Tâches par priorité"
+                      description="Répartition des tâches par niveau de priorité"
+                      date="Mis à jour à l'instant"
+                      chart={taskPriorityData}
+                    />
+                  </MDBox>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <MDBox mb={3}>
+                    <ReportsBarChart
+                      color="success"
+                      title="Tâches par utilisateur"
+                      description="Répartition des tâches assignées par utilisateur"
+                      date="Mis à jour à l'instant"
+                      chart={taskAssignmentData}
+                    />
+                  </MDBox>
+                </Grid>
+              </Grid>
             </MDBox>
-          </Grid>
 
-          {/* Sélection du projet */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <MDTypography variant="h6" gutterBottom>
-                Choisir un projet
-              </MDTypography>
-              <Select
-                value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
-                fullWidth
-              >
-                {projects.map((project) => (
-                  <MenuItem key={project._id} value={project._id}>
-                    {project.name}
-                  </MenuItem>
-                ))}
-              </Select>
+            {/* Projets et aperçu des tâches */}
+            <MDBox>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6} lg={8}>
+                  <Projects />
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card>
+                    <CardHeader
+                      title={
+                        <MDTypography variant="h6" fontWeight="medium">
+                          Aperçu des projets et tâches
+                        </MDTypography>
+                      }
+                    />
+                    <CardContent>
+                      {/* Projets récents */}
+                      <MDBox mb={3}>
+                        <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
+                          Projets récents
+                        </MDTypography>
+                        <List>
+                          {recentProjects.length > 0 ? (
+                            recentProjects.map((project) => (
+                              <ListItem key={project._id}>
+                                <ListItemText
+                                  primary={project.name}
+                                  secondary={project.description || "Aucune description"}
+                                />
+                              </ListItem>
+                            ))
+                          ) : (
+                            <MDTypography variant="body2">Aucun projet récent.</MDTypography>
+                          )}
+                        </List>
+                      </MDBox>
+
+                      <Divider />
+
+                      {/* Tâches en retard */}
+                      <MDBox mb={3}>
+                        <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
+                          Tâches en retard
+                        </MDTypography>
+                        <List>
+                          {overdueTasks.length > 0 ? (
+                            overdueTasks.map((task) => (
+                              <ListItem key={task._id}>
+                                <ListItemText
+                                  primary={task.name}
+                                  secondary={`Date limite: ${new Date(
+                                    task.deadline
+                                  ).toLocaleDateString()}`}
+                                />
+                              </ListItem>
+                            ))
+                          ) : (
+                            <MDTypography variant="body2">Aucune tâche en retard.</MDTypography>
+                          )}
+                        </List>
+                      </MDBox>
+
+                      <Divider />
+
+                      {/* Tâches à haute priorité */}
+                      <MDBox mb={3}>
+                        <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
+                          Tâches à haute priorité
+                        </MDTypography>
+                        <List>
+                          {highPriorityTasks.length > 0 ? (
+                            highPriorityTasks.map((task) => (
+                              <ListItem key={task._id}>
+                                <ListItemText
+                                  primary={task.name}
+                                  secondary={`Statut: ${task.status}`}
+                                />
+                              </ListItem>
+                            ))
+                          ) : (
+                            <MDTypography variant="body2">
+                              Aucune tâche à haute priorité.
+                            </MDTypography>
+                          )}
+                        </List>
+                      </MDBox>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
             </MDBox>
-          </Grid>
-        </Grid>
-
-        {/* Statistiques clés */}
-        <MDBox mt={4.5}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <ComplexStatisticsCard
-                color="success"
-                icon="task"
-                title="Tâches totales"
-                count={totalTasks.toString()}
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Tâches dans ce projet",
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <ComplexStatisticsCard
-                color="info"
-                icon="check_circle"
-                title="Tâches terminées"
-                count={completedTasks.toString()}
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Tâches terminées",
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <ComplexStatisticsCard
-                color="warning"
-                icon="pending_actions"
-                title="Tâches en cours"
-                count={inProgressTasks.toString()}
-                percentage={{
-                  color: "warning",
-                  amount: "",
-                  label: "Tâches en cours",
-                }}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-
-        {/* Graphiques */}
-        <MDBox mt={4.5}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <MDBox mb={3}>
-                <ReportsBarChart
-                  color="info"
-                  title="Tâches par priorité"
-                  description="Répartition des tâches par niveau de priorité"
-                  date="Mis à jour à l'instant"
-                  chart={taskPriorityData}
-                />
-              </MDBox>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <MDBox mb={3}>
-                <ReportsBarChart
-                  color="success"
-                  title="Tâches par utilisateur"
-                  description="Répartition des tâches assignées par utilisateur"
-                  date="Mis à jour à l'instant"
-                  chart={taskAssignmentData}
-                />
-              </MDBox>
-            </Grid>
-          </Grid>
-        </MDBox>
-
-        {/* Projets et aperçu des tâches */}
-        <MDBox>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={8}>
-              <Projects />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <Card>
-                <CardHeader
-                  title={
-                    <MDTypography variant="h6" fontWeight="medium">
-                      Aperçu des projets et tâches
-                    </MDTypography>
-                  }
-                />
-                <CardContent>
-                  {/* Projets récents */}
-                  <MDBox mb={3}>
-                    <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
-                      Projets récents
-                    </MDTypography>
-                    <List>
-                      {recentProjects.length > 0 ? (
-                        recentProjects.map((project) => (
-                          <ListItem key={project._id}>
-                            <ListItemText
-                              primary={project.name}
-                              secondary={project.description || "Aucune description"}
-                            />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <MDTypography variant="body2">Aucun projet récent.</MDTypography>
-                      )}
-                    </List>
-                  </MDBox>
-
-                  <Divider />
-
-                  {/* Tâches en retard */}
-                  <MDBox mb={3}>
-                    <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
-                      Tâches en retard
-                    </MDTypography>
-                    <List>
-                      {overdueTasks.length > 0 ? (
-                        overdueTasks.map((task) => (
-                          <ListItem key={task._id}>
-                            <ListItemText
-                              primary={task.name}
-                              secondary={`Date limite: ${new Date(
-                                task.deadline
-                              ).toLocaleDateString()}`}
-                            />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <MDTypography variant="body2">Aucune tâche en retard.</MDTypography>
-                      )}
-                    </List>
-                  </MDBox>
-
-                  <Divider />
-
-                  {/* Tâches à haute priorité */}
-                  <MDBox mb={3}>
-                    <MDTypography variant="subtitle1" fontWeight="bold" gutterBottom>
-                      Tâches à haute priorité
-                    </MDTypography>
-                    <List>
-                      {highPriorityTasks.length > 0 ? (
-                        highPriorityTasks.map((task) => (
-                          <ListItem key={task._id}>
-                            <ListItemText
-                              primary={task.name}
-                              secondary={`Statut: ${task.status}`}
-                            />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <MDTypography variant="body2">Aucune tâche à haute priorité.</MDTypography>
-                      )}
-                    </List>
-                  </MDBox>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </MDBox>
+          </>
+        )}
       </MDBox>
       <Footer />
     </DashboardLayout>

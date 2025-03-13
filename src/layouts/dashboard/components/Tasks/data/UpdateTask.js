@@ -17,6 +17,9 @@ import InputLabel from "@mui/material/InputLabel";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
+// Spinner component
+import Spinner from "examples/Spinner";
+
 function UpdateTask() {
   const { id } = useParams(); // Récupérer l'ID de la tâche depuis l'URL
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ function UpdateTask() {
     projectId: "", // Projet associé à la tâche
   });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // État pour gérer le chargement
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -46,7 +49,7 @@ function UpdateTask() {
       } catch (err) {
         setError("Erreur lors de la récupération des détails de la tâche");
       } finally {
-        setLoading(false);
+        setLoading(false); // Arrêter le chargement une fois les données récupérées
       }
     };
 
@@ -71,9 +74,6 @@ function UpdateTask() {
     }
   };
 
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -95,56 +95,60 @@ function UpdateTask() {
             </MDTypography>
           </MDBox>
           <MDBox pt={4} pb={3} px={3}>
-            <form onSubmit={handleSubmit}>
-              <MDBox mb={2}>
-                <MDInput
-                  type="text"
-                  name="name"
-                  label="Nom de la tâche"
-                  fullWidth
-                  value={task.name}
-                  onChange={handleChange}
-                  required
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <MDInput
-                  type="text"
-                  name="description"
-                  label="Description"
-                  multiline
-                  rows={4}
-                  fullWidth
-                  value={task.description}
-                  onChange={handleChange}
-                />
-              </MDBox>
-              <MDBox mb={2}>
-                <FormControl fullWidth>
-                  <InputLabel>Priorité</InputLabel>
-                  <Select name="priority" value={task.priority} onChange={handleChange}>
-                    <MenuItem value="Basse">Basse</MenuItem>
-                    <MenuItem value="Moyenne">Moyenne</MenuItem>
-                    <MenuItem value="Haute">Haute</MenuItem>
-                  </Select>
-                </FormControl>
-              </MDBox>
-              <MDBox mb={2}>
-                <MDInput
-                  type="date"
-                  name="deadline"
-                  label="Date limite"
-                  fullWidth
-                  value={task.deadline}
-                  onChange={handleChange}
-                />
-              </MDBox>
-              <MDBox mt={4} mb={1}>
-                <MDButton variant="gradient" color="info" fullWidth type="submit">
-                  Mettre à jour
-                </MDButton>
-              </MDBox>
-            </form>
+            {loading ? ( // Afficher le spinner si les données sont en cours de chargement
+              <Spinner />
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="text"
+                    name="name"
+                    label="Nom de la tâche"
+                    fullWidth
+                    value={task.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="text"
+                    name="description"
+                    label="Description"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={task.description}
+                    onChange={handleChange}
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <FormControl fullWidth>
+                    <InputLabel>Priorité</InputLabel>
+                    <Select name="priority" value={task.priority} onChange={handleChange}>
+                      <MenuItem value="Basse">Basse</MenuItem>
+                      <MenuItem value="Moyenne">Moyenne</MenuItem>
+                      <MenuItem value="Haute">Haute</MenuItem>
+                    </Select>
+                  </FormControl>
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="date"
+                    name="deadline"
+                    label="Date limite"
+                    fullWidth
+                    value={task.deadline}
+                    onChange={handleChange}
+                  />
+                </MDBox>
+                <MDBox mt={4} mb={1}>
+                  <MDButton variant="gradient" color="info" fullWidth type="submit">
+                    Mettre à jour
+                  </MDButton>
+                </MDBox>
+              </form>
+            )}
           </MDBox>
         </Card>
       </MDBox>

@@ -26,12 +26,15 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
+// Spinner component
+import Spinner from "examples/Spinner";
+
 function TaskList() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // État pour gérer le chargement
   const [error, setError] = useState("");
   const [project, setProject] = useState(null);
   const role = localStorage.getItem("role");
@@ -80,7 +83,7 @@ function TaskList() {
     } catch (err) {
       setError("Erreur lors de la récupération des tâches");
     } finally {
-      setLoading(false);
+      setLoading(false); // Arrêter le chargement une fois les données récupérées
     }
   };
 
@@ -266,7 +269,6 @@ function TaskList() {
     ),
   }));
 
-  if (loading) return <div className="text-center">Chargement...</div>;
   if (error) return <div className="text-center text-danger">{error}</div>;
 
   return (
@@ -288,54 +290,60 @@ function TaskList() {
           </MDTypography>
         </MDBox>
         <MDBox pt={3}>
-          {project && (
-            <MDBox mb={4} p={3} boxShadow={3} borderRadius="lg">
-              <MDBox display="flex" justifyContent="space-between" alignItems="center">
-                <MDBox>
-                  <MDTypography variant="h5">{project.name}</MDTypography>
-                  <MDTypography variant="body2" color="text">
-                    {project.description}
-                  </MDTypography>
-                  <MDTypography variant="body2" color="text">
-                    <span style={{ fontWeight: "bold", color: "red" }}>
-                      {" "}
-                      Échéance : {formatDate(project.deadline)}
-                    </span>
-                  </MDTypography>
-                </MDBox>
-                <MDBox position="relative" display="inline-flex">
-                  <CircularProgress
-                    variant="determinate"
-                    value={completionPercentage}
-                    size={100}
-                    thickness={5}
-                    color={completionPercentage === 100 ? "success" : "info"}
-                  />
-                  <MDBox
-                    top={0}
-                    left={0}
-                    bottom={0}
-                    right={0}
-                    position="absolute"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <MDTypography variant="h6" color="text">
-                      {`${Math.round(completionPercentage)}%`}
-                    </MDTypography>
+          {loading ? ( // Afficher le spinner si les données sont en cours de chargement
+            <Spinner />
+          ) : (
+            <>
+              {project && (
+                <MDBox mb={4} p={3} boxShadow={3} borderRadius="lg">
+                  <MDBox display="flex" justifyContent="space-between" alignItems="center">
+                    <MDBox>
+                      <MDTypography variant="h5">{project.name}</MDTypography>
+                      <MDTypography variant="body2" color="text">
+                        {project.description}
+                      </MDTypography>
+                      <MDTypography variant="body2" color="text">
+                        <span style={{ fontWeight: "bold", color: "red" }}>
+                          {" "}
+                          Échéance : {formatDate(project.deadline)}
+                        </span>
+                      </MDTypography>
+                    </MDBox>
+                    <MDBox position="relative" display="inline-flex">
+                      <CircularProgress
+                        variant="determinate"
+                        value={completionPercentage}
+                        size={100}
+                        thickness={5}
+                        color={completionPercentage === 100 ? "success" : "info"}
+                      />
+                      <MDBox
+                        top={0}
+                        left={0}
+                        bottom={0}
+                        right={0}
+                        position="absolute"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <MDTypography variant="h6" color="text">
+                          {`${Math.round(completionPercentage)}%`}
+                        </MDTypography>
+                      </MDBox>
+                    </MDBox>
                   </MDBox>
                 </MDBox>
-              </MDBox>
-            </MDBox>
+              )}
+              <DataTable
+                table={{ columns, rows }}
+                isSorted={false}
+                entriesPerPage={false}
+                showTotalEntries={false}
+                noEndBorder
+              />
+            </>
           )}
-          <DataTable
-            table={{ columns, rows }}
-            isSorted={false}
-            entriesPerPage={false}
-            showTotalEntries={false}
-            noEndBorder
-          />
         </MDBox>
       </MDBox>
     </DashboardLayout>

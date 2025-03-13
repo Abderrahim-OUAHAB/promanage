@@ -7,11 +7,16 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
+// Spinner component
+import Spinner from "examples/Spinner";
+
 function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true); // État pour gérer le chargement
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
+
   useEffect(() => {
     document.title = "Liste des Projets";
   }, []);
@@ -29,7 +34,9 @@ function ProjectList() {
         const sortedProjects = res.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
         setProjects(sortedProjects || []);
       } catch (error) {
-        console.error("Erreur lors de la récupération des projets :", error);
+        //console.error("Erreur lors de la récupération des projets :", error);
+      } finally {
+        setLoading(false); // Arrêter le chargement une fois les données récupérées
       }
     };
 
@@ -39,7 +46,7 @@ function ProjectList() {
     };
     checkAdmin();
     fetchProjects();
-  }, []);
+  }, [role]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer ce projet ?")) {
@@ -117,14 +124,20 @@ function ProjectList() {
 
   return (
     <MDBox pt={3}>
-      <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}></MDBox>
-      <DataTable
-        table={{ columns, rows }}
-        isSorted={false}
-        entriesPerPage={false}
-        showTotalEntries={false}
-        noEndBorder
-      />
+      {loading ? ( // Afficher le spinner si les données sont en cours de chargement
+        <Spinner />
+      ) : (
+        <>
+          <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}></MDBox>
+          <DataTable
+            table={{ columns, rows }}
+            isSorted={false}
+            entriesPerPage={false}
+            showTotalEntries={false}
+            noEndBorder
+          />
+        </>
+      )}
     </MDBox>
   );
 }

@@ -40,7 +40,7 @@ function CreateTask() {
         const res = await getProjects();
         setProjects(res || []);
       } catch (error) {
-        console.error("Erreur lors de la récupération des projets :", error);
+        //console.error("Erreur lors de la récupération des projets :", error);
       }
     };
     fetchProjects();
